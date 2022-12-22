@@ -174,7 +174,6 @@ spring.mvc.view.suffix=.html
 
 
 
-## 여기까지 완료하게되면 8080포트만 키면 react정보를 불러올수있게된다.
 
 
 
