@@ -91,5 +91,91 @@ public class DevController {
 }
 </code></pre>
 
+### 백엔드 빌드 시 FrontEnd도 같이 빌드
+
+
+<code><pre>
+def frontendDir = "$projectDir/src/main/test_dev"           //이 경로의 프론트의 경로를 적어주면됩니다.
+
+sourceSets {
+	main {
+		resources { srcDirs = ["$projectDir/src/main/resources"]    //빌드된 파일이 위치할 장소
+		}
+	}
+}
+
+processResources { dependsOn "copyReactBuildFiles" }
+
+task installReact(type: Exec) {
+	workingDir "$frontendDir"
+	inputs.dir "$frontendDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "audit", "fix"
+		commandLine 'npm.cmd', 'install' }
+	else {
+		commandLine "npm", "audit", "fix" commandLine 'npm', 'install'
+	}
+}
+
+task buildReact(type: Exec) {
+	dependsOn "installReact"
+	workingDir "$frontendDir"
+	inputs.dir "$frontendDir"
+	group = BasePlugin.BUILD_GROUP
+	if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+		commandLine "npm.cmd", "run-script", "build"
+	} else {
+		commandLine "npm", "run-script", "build"
+	}
+}
+
+task copyReactBuildFiles(type: Copy) {
+	dependsOn "buildReact"
+	from "$frontendDir/build"
+	into "$projectDir/src/main/resources/static"
+}
+
+
+</code></pre>
+
+### 백엔드에서는 생성된 index.html 연결이 되야한다.(에러처리시 index로 이동시키는 코드)
+
+<code><pre>
+
+package com.devtest.devtest.controller;
+
+import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class WebController implements ErrorController {
+    // 백엔드에서 React.js 라우터에 있는 주소로 주소를 임의 변경하면,
+    // 매핑되는 주소가 없으므로 404 오류가 생긴다.
+    // 이를 방지하기 위해 에러가 발생하면 프론트엔드에서 작성한 frontend/src/index.html을 전송한다.
+    @GetMapping({ "/", "/error" })
+    public String index() {
+        return "index";
+    }
+
+    /*400에러 발생 시 getErrorPath() 호출*/
+    public String getErrorPath() {
+        return "/error";
+    }
+}
+
+</code></pre>
+
+### 백엔드: application properties에서 정적파일 view 매핑
+
+spring.thymeleaf.prefix=classpath:/static/
+spring.mvc.view.suffix=.html
+
+
+
+### 여기까지 완료하게되면 8080포트만 키면 react정보를 불러올수있게된다.
+
+
 
 
