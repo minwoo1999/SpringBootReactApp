@@ -91,7 +91,7 @@ public class DevController {
 }
 </code></pre>
 
-### 백엔드 빌드 시 FrontEnd도 같이 빌드
+## 백엔드: 빌드 시 FrontEnd도 같이 빌드
 
 
 <code><pre>
@@ -139,7 +139,7 @@ task copyReactBuildFiles(type: Copy) {
 
 </code></pre>
 
-### 백엔드에서는 생성된 index.html 연결이 되야한다.(에러처리시 index로 이동시키는 코드)
+## 백엔드에서는 생성된 index.html 연결이 되야한다.(에러처리시 index로 이동시키는 코드)
 
 <code><pre>
 
@@ -167,14 +167,14 @@ public class WebController implements ErrorController {
 
 </code></pre>
 
-### 백엔드: application properties에서 정적파일 view 매핑
+## 백엔드: application properties에서 정적파일 view 매핑
 
 spring.thymeleaf.prefix=classpath:/static/
 spring.mvc.view.suffix=.html
 
 
 
-### 여기까지 완료하게되면 8080포트만 키면 react정보를 불러올수있게된다.
+## 여기까지 완료하게되면 8080포트만 키면 react정보를 불러올수있게된다.
 
 
 
